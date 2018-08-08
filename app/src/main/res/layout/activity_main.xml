@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="news.dvlp.testretrofit.MainActivity">
+
+    <Button
+        android:layout_margin="10dp"
+        android:id="@+id/btnHttpStart"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="开始网络请求"
+        android:textColor="#ffffff"
+        android:background="@color/colorPrimaryDark"/>
+    <TextView
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="20dp"
+        android:id="@+id/str"
+        android:text="1232321312"
+        android:textColor="@color/colorAccent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/wxLogin"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center_horizontal"
+        android:text="微信登录"/>
+    <Button
+        android:id="@+id/wxGetUser"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center_horizontal"
+        android:text="获取用户信息"/>
+
+</LinearLayout>

@@ -1,0 +1,49 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "news.dvlp.testretrofit"
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            matchingFallbacks = ['release']
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+configurations.all {
+//    transitive = false
+}
+dependencies {
+
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.1'
+    testImplementation 'junit:junit:4.12'
+    implementation files('libs/retrofit-2.4.0.jar')
+    implementation files('libs/okhttp-3.10.0.jar')
+    implementation files('libs/okio-1.14.1.jar')
+
+        compile('com.squareup.retrofit2:converter-gson:2.1.0') {
+        exclude group: 'com.squareup.retrofit2'
+
+    }
+    compile('org.ligboy.retrofit2:converter-fastjson-android:2.1.0') {
+        exclude group: 'com.squareup.retrofit2'
+
+    }
+
+    //微信登录
+    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
+
+        androidTestImplementation 'com.android.support.test:runner:0.5'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:2.2.2'
+}
