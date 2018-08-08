@@ -4,10 +4,8 @@ package news.dvlp.testretrofit.retrofit;
 import android.database.Observable;
 
 import news.dvlp.testretrofit.DataBean;
-import news.dvlp.testretrofit.HttpBean;
-import news.dvlp.testretrofit.wxapi.WXLogin;
-import news.dvlp.testretrofit.wxapi.WXUser;
-import okhttp3.ResponseBody;
+import news.dvlp.testretrofit.wxlib.WXLoginBean;
+import news.dvlp.testretrofit.wxlib.WXUserBean;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -64,7 +62,7 @@ public interface RetrofitService {
      * @return 返回值
      */
     @GET("https://api.weixin.qq.com/sns/oauth2/access_token")//配置的get请求
-    Call<WXLogin> getFavourable(@Query("appid") String appid,@Query("secret") String secret,@Query("code") String code,@Query("grant_type") String grant_type);
+    Call<WXLoginBean> getFavourable(@Query("appid") String appid, @Query("secret") String secret, @Query("code") String code, @Query("grant_type") String grant_type);
 
 
     @GET("http://www.wanandroid.com/tools/mockapi/{id}/favourable")//配置的get请求
@@ -75,12 +73,12 @@ public interface RetrofitService {
      * @return 返回值
      */
     @GET//配置的get请求
-    Call<WXLogin> getLogin(@Url String url);
+    Call<WXLoginBean> getLogin(@Url String url);
 
     /**
      * 获取微信用户信息
      * @return 返回值
      */
     @GET//配置的get请求
-    Call<WXUser> getLoginUser(@Url String url);
+    Call<WXUserBean> getLoginUser(@Url String url);
 }

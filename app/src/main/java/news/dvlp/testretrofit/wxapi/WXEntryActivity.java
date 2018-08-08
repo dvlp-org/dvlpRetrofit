@@ -3,11 +3,9 @@ package news.dvlp.testretrofit.wxapi;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.gson.JsonObject;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
@@ -15,25 +13,16 @@ import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.net.URLEncoder;
-import java.util.List;
 
-import news.dvlp.testretrofit.DataBean;
-import news.dvlp.testretrofit.HttpBean;
-import news.dvlp.testretrofit.WalletService;
 import news.dvlp.testretrofit.observer.ObserversManager;
 import news.dvlp.testretrofit.retrofit.RetrofitClient;
 import news.dvlp.testretrofit.retrofit.RetrofitService;
-import okhttp3.ResponseBody;
+import news.dvlp.testretrofit.wxlib.WXLoginBean;
+import news.dvlp.testretrofit.wxlib.WXUserBean;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Converter;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by liubaigang on 2018/8/7.
@@ -41,6 +30,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 
+    public int WX_LOGIN = 1;
     private IWXAPI api;
     private BaseResp resp = null;
     private String WX_APP_ID = "wx6397da1a5719b713";
@@ -68,66 +58,101 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
     // 第三方应用发送到微信的请求处理后的响应结果，会回调到该方法
     @Override
     public void onResp(BaseResp resp) {
-        Toast.makeText(this, "    //     // 第三方应用发送到微信的请求处理后的响应结果，会回调到该方法，会回调到该方法\n", Toast.LENGTH_LONG).show();
 
         String result = "";
         if (resp != null) {
             resp = resp;
         }
-        switch (resp.errCode) {
-            case BaseResp.ErrCode.ERR_OK:
-                result = "发送成功";
-                Toast.makeText(this, result, Toast.LENGTH_LONG).show();
-                String code = ((SendAuth.Resp) resp).code;
+        //微信登录为getType为1，分享为0
+        if (resp.getType() == WX_LOGIN) {
 
-            /*
-             * 将你前面得到的AppID、AppSecret、code，拼接成URL 获取access_token等等的信息(微信)
-             */
-                String get_access_token = getCodeRequest(code);
-                Log.e("打印返回的json数据", get_access_token + "-------------get_access_token");
+            switch (resp.errCode) {
+                case BaseResp.ErrCode.ERR_OK:
+                    result = "发送成功";
+                    Toast.makeText(this, result, Toast.LENGTH_LONG).show();
+                    String code = ((SendAuth.Resp) resp).code;
 
-                Call<WXLogin> favourables = RetrofitClient.getInstance()
-                        .create(RetrofitService.class)
-                        .getLogin(get_access_token);
-                favourables.enqueue(new Callback<WXLogin>() {
-                    @Override
-                    public void onResponse(Call<WXLogin> call, Response<WXLogin> response) {
-                        WXLogin message = response.body();
 
-                        Log.e("获取微信授权信息", message.getAccess_token() + "-------------"+message.getOpenid());
+                    //将你前面得到的AppID、AppSecret、code，拼接成URL 获取access_token等等的信息(微信)
+                    String get_access_token = getCodeRequest(code);
+                    Log.e("打印返回的json数据", get_access_token + "-------------get_access_token");
+                    authPerssion(get_access_token);
 
-                        //拼接Url
-                        String get_user_info_url = getUserInfo(message.getAccess_token(), message.getOpenid());
-                        //请求微信登录信息
-                        getUserInfo(get_user_info_url);
-                    }
+                    finish();
+                    break;
+                case BaseResp.ErrCode.ERR_USER_CANCEL:
+                    result = "发送取消";
+                    Toast.makeText(this, result, Toast.LENGTH_LONG).show();
+                    finish();
+                    break;
+                case BaseResp.ErrCode.ERR_AUTH_DENIED:
+                    result = "发送被拒绝";
+                    Toast.makeText(this, result, Toast.LENGTH_LONG).show();
+                    finish();
+                    break;
+                default:
+                    result = "发送返回";
+                    Toast.makeText(this, result, Toast.LENGTH_LONG).show();
+                    finish();
+                    break;
+            }
+        } else {
+            //分享成功回调
+            System.out.println("------------分享回调------------");
+            switch (resp.errCode) {
+                case BaseResp.ErrCode.ERR_OK:
+                    //分享成功
+                    Toast.makeText(WXEntryActivity.this, "分享成功", Toast.LENGTH_LONG).show();
+                    break;
+                case BaseResp.ErrCode.ERR_USER_CANCEL:
+                    //分享取消
+                    Toast.makeText(WXEntryActivity.this, "分享取消", Toast.LENGTH_LONG).show();
+                    break;
+                case BaseResp.ErrCode.ERR_AUTH_DENIED:
+                    //分享拒绝
+                    Toast.makeText(WXEntryActivity.this, "分享拒绝", Toast.LENGTH_LONG).show();
+                    break;
+                default:
+                    result = "分享返回";
+                    Toast.makeText(this, result, Toast.LENGTH_LONG).show();
+                    finish();
+                    break;
+            }
 
-                    @Override
-                    public void onFailure(Call<WXLogin> call, Throwable throwable) {
-                        Log.e("打印返回的json数据2", throwable.getMessage() + "-------------");
-
-                    }
-                });
-
-                finish();
-                break;
-            case BaseResp.ErrCode.ERR_USER_CANCEL:
-                result = "发送取消";
-                Toast.makeText(this, result, Toast.LENGTH_LONG).show();
-                finish();
-                break;
-            case BaseResp.ErrCode.ERR_AUTH_DENIED:
-                result = "发送被拒绝";
-                Toast.makeText(this, result, Toast.LENGTH_LONG).show();
-                finish();
-                break;
-            default:
-                result = "发送返回";
-                Toast.makeText(this, result, Toast.LENGTH_LONG).show();
-                finish();
-                break;
         }
     }
+
+
+    /**
+     * 获取授权信息
+     *
+     * @param get_access_token 请求的全地址
+     */
+    private void authPerssion(String get_access_token) {
+        Call<WXLoginBean> favourables = RetrofitClient.getInstance()
+                .create(RetrofitService.class)
+                .getLogin(get_access_token);
+        favourables.enqueue(new Callback<WXLoginBean>() {
+            @Override
+            public void onResponse(Call<WXLoginBean> call, Response<WXLoginBean> response) {
+                WXLoginBean message = response.body();
+
+                Log.e("获取微信授权信息", message.getAccess_token() + "-------------" + message.getOpenid());
+
+                //拼接Url
+                String get_user_info_url = getUserInfo(message.getAccess_token(), message.getOpenid());
+                //请求微信登录信息
+                getUserInfo(get_user_info_url);
+            }
+
+            @Override
+            public void onFailure(Call<WXLoginBean> call, Throwable throwable) {
+                Log.e("打印返回的json数据2", throwable.getMessage() + "-------------");
+
+            }
+        });
+    }
+
 
     /**
      * 通过拼接的用户信息url获取用户信息
@@ -135,21 +160,21 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
      * @param
      */
     private void getUserInfo(String user_info_url) {
-        Call<WXUser> favourables = RetrofitClient.getInstance()
+        Call<WXUserBean> favourables = RetrofitClient.getInstance()
                 .create(RetrofitService.class)
                 .getLoginUser(user_info_url);
-        favourables.enqueue(new Callback<WXUser>() {
+        favourables.enqueue(new Callback<WXUserBean>() {
             @Override
-            public void onResponse(Call<WXUser> call, Response<WXUser> response) {
-                WXUser message = response.body();
+            public void onResponse(Call<WXUserBean> call, Response<WXUserBean> response) {
+                WXUserBean message = response.body();
 
                 Log.e("获取用户信息", message.getNickname() + "-------------" + message.getHeadimgurl());
 
-                ObserversManager.getInstance().sendMessage("WXFINISH",message);
+                ObserversManager.getInstance().sendMessage("WXFINISH", message);
             }
 
             @Override
-            public void onFailure(Call<WXUser> call, Throwable throwable) {
+            public void onFailure(Call<WXUserBean> call, Throwable throwable) {
                 Log.e("打印返回的json数据2", throwable.getMessage() + "-------------");
 
             }
@@ -181,6 +206,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
         result = GetCodeRequest;
         return result;
     }
+
 
     /**
      * 获取用户个人信息的URL（微信）

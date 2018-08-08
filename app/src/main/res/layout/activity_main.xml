@@ -42,7 +42,7 @@
         android:layout_height="50dp"
         android:gravity="center"
         android:textColor="#ffffff"
-        android:text="获取用户信息"/>
+        android:text="微信分享"/>
 
 
     <ScrollView

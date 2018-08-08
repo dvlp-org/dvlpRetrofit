@@ -1,9 +1,6 @@
 package news.dvlp.testretrofit;
 
-import com.google.gson.JsonObject;
-
-import news.dvlp.testretrofit.wxapi.WXLogin;
-import okhttp3.ResponseBody;
+import news.dvlp.testretrofit.wxlib.WXLoginBean;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -25,5 +22,5 @@ public interface WalletService {
      * @return 返回值
      */
     @GET("{url}")//配置的get请求
-    Call<WXLogin> getLogin(@Path("url") String id);
+    Call<WXLoginBean> getLogin(@Path("url") String id);
 }

@@ -23,15 +23,15 @@ import news.dvlp.testretrofit.observer.ObserverListenner;
 import news.dvlp.testretrofit.observer.ObserversManager;
 import news.dvlp.testretrofit.retrofit.RetrofitClient;
 import news.dvlp.testretrofit.retrofit.RetrofitService;
-import news.dvlp.testretrofit.wxapi.WXLogin;
-import news.dvlp.testretrofit.wxapi.WXUser;
+import news.dvlp.testretrofit.wxlib.WXLoginBean;
+import news.dvlp.testretrofit.wxlib.WXUserBean;
+import news.dvlp.testretrofit.wxlib.WxShareAndLoginUtils;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Converter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements ObserverListenner{
     private TextView mTv;
@@ -56,13 +56,15 @@ public class MainActivity extends AppCompatActivity implements ObserverListenner
         mLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                WXLogin();
+//                WXLogin();
+                WxShareAndLoginUtils.WXLogin(MainActivity.this,MainActivity.this);
             }
         });
         mGetUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                httpRequest();
+                WxShareAndLoginUtils.WxTextShare(MainActivity.this,"微信分享", WxShareAndLoginUtils.WECHAT_MOMENT);
+
             }
         });
 
@@ -115,20 +117,20 @@ public class MainActivity extends AppCompatActivity implements ObserverListenner
 
         //封装的retrofit
         String url="appid=wx6397da1a5719b713&secret=8e92089b066463369b8cc9f07a7638e8&code=081WPNyU1J8CUV0cJhyU1OqByU1WPNyT";
-        Call<WXLogin> favourables=  RetrofitClient.getInstance()
+        Call<WXLoginBean> favourables=  RetrofitClient.getInstance()
                 .create(RetrofitService.class)
                 .getFavourable("wx6397da1a5719b713","8e92089b066463369b8cc9f07a7638e8","081WPNyU1J8CUV0cJhyU1OqByU1WPNyT","authorization_code");
-        favourables.enqueue(new Callback<WXLogin>() {
+        favourables.enqueue(new Callback<WXLoginBean>() {
             @Override
-            public void onResponse(Call<WXLogin> call, Response<WXLogin> response) {
-                WXLogin message = response.body();
+            public void onResponse(Call<WXLoginBean> call, Response<WXLoginBean> response) {
+                WXLoginBean message = response.body();
                 String data=message.getErrcode();
                 Log.e("打印返回的json数据2",data+"-------------");
 
             }
 
             @Override
-            public void onFailure(Call<WXLogin> call, Throwable throwable) {
+            public void onFailure(Call<WXLoginBean> call, Throwable throwable) {
                 Log.e("打印返回的json数据2",throwable.getMessage()+"-------------");
 
             }
@@ -158,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements ObserverListenner
 
     @Override
     public void onReciveMessage(String name, Object object) {
-        WXUser user= (WXUser) object;
+        WXUserBean user= (WXUserBean) object;
         Glide.with(this).load(user.getHeadimgurl()).into(mImageView);
         mTv.setText(
                   "昵    称："+user.getNickname() +"\n"

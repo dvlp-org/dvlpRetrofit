@@ -1,4 +1,4 @@
-package news.dvlp.testretrofit.wxapi;
+package news.dvlp.testretrofit.wxlib;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import java.util.List;
  * Created by liubaigang on 2018/8/8.
  */
 
-public class WXUser {
+public class WXUserBean {
     private String openid; //用户标识
     private String nickname;//普通用户昵称
     private String sex;

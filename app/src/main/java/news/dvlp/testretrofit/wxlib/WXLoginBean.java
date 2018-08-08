@@ -1,10 +1,10 @@
-package news.dvlp.testretrofit.wxapi;
+package news.dvlp.testretrofit.wxlib;
 
 /**
  * Created by liubaigang on 2018/8/8.
  */
 
-public class WXLogin {
+public class WXLoginBean {
     private String errcode;
     private String errmsg;
 
