@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
@@ -17,9 +19,12 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import news.dvlp.testretrofit.observer.ObserverListenner;
+import news.dvlp.testretrofit.observer.ObserversManager;
 import news.dvlp.testretrofit.retrofit.RetrofitClient;
 import news.dvlp.testretrofit.retrofit.RetrofitService;
 import news.dvlp.testretrofit.wxapi.WXLogin;
+import news.dvlp.testretrofit.wxapi.WXUser;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,9 +33,10 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ObserverListenner{
     private TextView mTv;
     private Button mBtn,mLogin,mGetUser;
+    private ImageView mImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         mBtn=findViewById(R.id.btnHttpStart);
         mLogin=findViewById(R.id.wxLogin);
         mGetUser=findViewById(R.id.wxGetUser);
+        mImageView=findViewById(R.id.imgs);
         mBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,8 +65,14 @@ public class MainActivity extends AppCompatActivity {
                 httpRequest();
             }
         });
+
+        ObserversManager.getInstance().addObserver("WXFINISH",this);
     }
 
+
+    /**
+     * 请求测试
+     */
     private void httpRequest(){
 
 
@@ -126,7 +139,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     /**
      * 登录微信
      */
@@ -144,34 +156,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onReciveMessage(String name, Object object) {
+        WXUser user= (WXUser) object;
+        Glide.with(this).load(user.getHeadimgurl()).into(mImageView);
+        mTv.setText(
+                  "昵    称："+user.getNickname() +"\n"
+                 +"用户标识："+user.getOpenid()+"\n"
+                 +"性    别："+user.getSex()+"\n"
+                 +"省    份："+user.getProvince()+"\n"
+                 +"城    市："+user.getCity()+"\n"
+                 +"国    家："+user.getCountry()+"\n"
+                 +"特权信息："+getStr(user.getPrivilege())+"\n"
+                 +"平台标识："+user.getUnionid()
+        );
+    }
 
-//private void reque{
-//        Call<WXLogin> favourables=  RetrofitClient.getInstance()
-//                .create(RetrofitService.class)
-//                .getFavourable(WX_APP_ID,WX_APP_SECRET,code,"authorization_code");
-//        favourables.enqueue(new Callback<WXLogin>() {
-//            @Override
-//            public void onResponse(Call<WXLogin> call, Response<WXLogin> response) {
-//                WXLogin message = response.body();
-//                String data=message.getErrcode();
-//                Log.e("打印返回的json数据2",data+"-------------");
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<WXLogin> call, Throwable throwable) {
-//                Log.e("打印返回的json数据2",throwable.getMessage()+"-------------");
-//
-//            }
-//        });
-//    }
-
-
-
-
-
-
-
-
-
+    private String getStr(List<String>list){
+        String str="";
+        for (int i = 0; i <list.size() ; i++) {
+            str+=list.get(i);
+        }
+        return str;
+    }
 }

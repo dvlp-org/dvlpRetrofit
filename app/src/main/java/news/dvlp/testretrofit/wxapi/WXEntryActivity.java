@@ -24,6 +24,7 @@ import java.util.List;
 import news.dvlp.testretrofit.DataBean;
 import news.dvlp.testretrofit.HttpBean;
 import news.dvlp.testretrofit.WalletService;
+import news.dvlp.testretrofit.observer.ObserversManager;
 import news.dvlp.testretrofit.retrofit.RetrofitClient;
 import news.dvlp.testretrofit.retrofit.RetrofitService;
 import okhttp3.ResponseBody;
@@ -144,7 +145,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 
                 Log.e("获取用户信息", message.getNickname() + "-------------" + message.getHeadimgurl());
 
-
+                ObserversManager.getInstance().sendMessage("WXFINISH",message);
             }
 
             @Override
