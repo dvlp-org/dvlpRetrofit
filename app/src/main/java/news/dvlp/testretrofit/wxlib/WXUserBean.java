@@ -48,7 +48,7 @@ public class WXUserBean {
     }
 
     public String getSex() {
-        return sex;
+        return (sex .equals("0")) ? "男" : "女";
     }
 
     public void setSex(String sex) {

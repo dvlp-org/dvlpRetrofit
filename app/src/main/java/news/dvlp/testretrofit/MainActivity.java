@@ -1,5 +1,7 @@
 package news.dvlp.testretrofit;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +19,7 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
 import java.util.List;
 
 import news.dvlp.testretrofit.observer.ObserverListenner;
@@ -25,6 +28,7 @@ import news.dvlp.testretrofit.retrofit.RetrofitClient;
 import news.dvlp.testretrofit.retrofit.RetrofitService;
 import news.dvlp.testretrofit.wxlib.WXLoginBean;
 import news.dvlp.testretrofit.wxlib.WXUserBean;
+import news.dvlp.testretrofit.wxlib.WxCallBack;
 import news.dvlp.testretrofit.wxlib.WxShareAndLoginUtils;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -33,20 +37,22 @@ import retrofit2.Converter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class MainActivity extends AppCompatActivity implements ObserverListenner{
+public class MainActivity extends AppCompatActivity implements ObserverListenner {
     private TextView mTv;
-    private Button mBtn,mLogin,mGetUser;
+    private Button mBtn, mLogin, mGetUser, mSharedImg, mSharedInter;
     private ImageView mImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mTv=findViewById(R.id.str);
-        mBtn=findViewById(R.id.btnHttpStart);
-        mLogin=findViewById(R.id.wxLogin);
-        mGetUser=findViewById(R.id.wxGetUser);
-        mImageView=findViewById(R.id.imgs);
+        mTv = findViewById(R.id.str);
+        mBtn = findViewById(R.id.btnHttpStart);
+        mLogin = findViewById(R.id.wxLogin);
+        mGetUser = findViewById(R.id.wxGetUser);
+        mImageView = findViewById(R.id.imgs);
+        mSharedImg = findViewById(R.id.wxSharedImg);
+        mSharedInter = findViewById(R.id.wxSharedInter);
         mBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,26 +63,60 @@ public class MainActivity extends AppCompatActivity implements ObserverListenner
             @Override
             public void onClick(View v) {
 //                WXLogin();
-                WxShareAndLoginUtils.WXLogin(MainActivity.this,MainActivity.this);
+                WxShareAndLoginUtils.WXLogin(MainActivity.this, MainActivity.this);
             }
         });
         mGetUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                WxShareAndLoginUtils.WxTextShare(MainActivity.this,"微信分享", WxShareAndLoginUtils.WECHAT_MOMENT);
+                WxShareAndLoginUtils.WxTextShare(MainActivity.this, "微信分享", WxShareAndLoginUtils.WECHAT_FRIEND);
+
+            }
+        });
+        mSharedImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WxShareAndLoginUtils.WxBitmapShare(MainActivity.this, R.mipmap.ic_launcher, WxShareAndLoginUtils.WECHAT_MOMENT);
+            }
+        });
+
+        mSharedInter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WxShareAndLoginUtils.setWxSharedFinishListenner(new ObserverListenner() {
+                    @Override
+                    public void onReciveMessage(String name, Object object) {
+                        WxCallBack callBack=(WxCallBack) object;
+                        if(null!=callBack){
+                            mTv.setText(callBack.getCode()+"\n"+callBack.getCallType()+"\n"+callBack.getMes());
+
+                        }
+                    }
+                });
+                WxShareAndLoginUtils.WxUrlShare(MainActivity.this, "http://www.baidu.com", "百度", "百度一下",
+                        R.mipmap.ic_launcher,
+                        WxShareAndLoginUtils.WECHAT_FRIEND);
+//                try {
+//                    WxShareAndLoginUtils.share(
+//                            MainActivity.this,
+//                            "http://www.baidu.com",
+//                            "百度",
+//                            "https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=3295332534,276154593&fm=27&gp=0.jpg",
+//                            WxShareAndLoginUtils.WECHAT_FRIEND);
+//                } catch (MalformedURLException e) {
+//                    e.printStackTrace();
+//                }
 
             }
         });
 
-        ObserversManager.getInstance().addObserver("WXFINISH",this);
     }
 
 
     /**
      * 请求测试
      */
-    private void httpRequest(){
-
+    private void httpRequest() {
 
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -104,38 +144,37 @@ public class MainActivity extends AppCompatActivity implements ObserverListenner
             public void onResponse(Call<HttpBean> call, Response<HttpBean> response) {
 //                HttpBean message = response.body();
 //                List<DataBean> data=message.getData();
-                Log.e("打印返回的json数据",response.body()+"-------------");
+                Log.e("打印返回的json数据", response.body() + "-------------");
 //                mTv.setText(""+data.get(0).getActivity1() );
             }
 
             @Override
             public void onFailure(Call<HttpBean> call, Throwable t) {
                 //请求失败的处理
-                Log.e("打印返回的json数据","请求失败.............");
+                Log.e("打印返回的json数据", "请求失败.............");
             }
         });
 
         //封装的retrofit
-        String url="appid=wx6397da1a5719b713&secret=8e92089b066463369b8cc9f07a7638e8&code=081WPNyU1J8CUV0cJhyU1OqByU1WPNyT";
-        Call<WXLoginBean> favourables=  RetrofitClient.getInstance()
+        String url = "appid=wx6397da1a5719b713&secret=8e92089b066463369b8cc9f07a7638e8&code=081WPNyU1J8CUV0cJhyU1OqByU1WPNyT";
+        Call<WXLoginBean> favourables = RetrofitClient.getInstance()
                 .create(RetrofitService.class)
-                .getFavourable("wx6397da1a5719b713","8e92089b066463369b8cc9f07a7638e8","081WPNyU1J8CUV0cJhyU1OqByU1WPNyT","authorization_code");
+                .getFavourable("wx6397da1a5719b713", "8e92089b066463369b8cc9f07a7638e8", "081WPNyU1J8CUV0cJhyU1OqByU1WPNyT", "authorization_code");
         favourables.enqueue(new Callback<WXLoginBean>() {
             @Override
             public void onResponse(Call<WXLoginBean> call, Response<WXLoginBean> response) {
                 WXLoginBean message = response.body();
-                String data=message.getErrcode();
-                Log.e("打印返回的json数据2",data+"-------------");
+                String data = message.getErrcode();
+                Log.e("打印返回的json数据2", data + "-------------");
 
             }
 
             @Override
             public void onFailure(Call<WXLoginBean> call, Throwable throwable) {
-                Log.e("打印返回的json数据2",throwable.getMessage()+"-------------");
+                Log.e("打印返回的json数据2", throwable.getMessage() + "-------------");
 
             }
         });
-
 
 
     }
@@ -147,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements ObserverListenner
     // 微信登录
     private static IWXAPI WXapi;
     private String WX_APP_ID = "wx6397da1a5719b713";
+
     private void WXLogin() {
         WXapi = WXAPIFactory.createWXAPI(this, WX_APP_ID, true);
         WXapi.registerApp(WX_APP_ID);
@@ -160,24 +200,25 @@ public class MainActivity extends AppCompatActivity implements ObserverListenner
 
     @Override
     public void onReciveMessage(String name, Object object) {
-        WXUserBean user= (WXUserBean) object;
+
+        WXUserBean user = (WXUserBean) object;
         Glide.with(this).load(user.getHeadimgurl()).into(mImageView);
         mTv.setText(
-                  "昵    称："+user.getNickname() +"\n"
-                 +"用户标识："+user.getOpenid()+"\n"
-                 +"性    别："+user.getSex()+"\n"
-                 +"省    份："+user.getProvince()+"\n"
-                 +"城    市："+user.getCity()+"\n"
-                 +"国    家："+user.getCountry()+"\n"
-                 +"特权信息："+getStr(user.getPrivilege())+"\n"
-                 +"平台标识："+user.getUnionid()
+                "昵    称：" + user.getNickname() + "\n"
+                        + "用户标识：" + user.getOpenid() + "\n"
+                        + "性    别：" + user.getSex() + "\n"
+                        + "省    份：" + user.getProvince() + "\n"
+                        + "城    市：" + user.getCity() + "\n"
+                        + "国    家：" + user.getCountry() + "\n"
+                        + "特权信息：" + getStr(user.getPrivilege()) + "\n"
+                        + "平台标识：" + user.getUnionid()
         );
     }
 
-    private String getStr(List<String>list){
-        String str="";
-        for (int i = 0; i <list.size() ; i++) {
-            str+=list.get(i);
+    private String getStr(List<String> list) {
+        String str = "";
+        for (int i = 0; i < list.size(); i++) {
+            str += list.get(i);
         }
         return str;
     }

@@ -20,6 +20,7 @@ import news.dvlp.testretrofit.retrofit.RetrofitClient;
 import news.dvlp.testretrofit.retrofit.RetrofitService;
 import news.dvlp.testretrofit.wxlib.WXLoginBean;
 import news.dvlp.testretrofit.wxlib.WXUserBean;
+import news.dvlp.testretrofit.wxlib.WxCallBack;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -63,9 +64,10 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
         if (resp != null) {
             resp = resp;
         }
+        WxCallBack callBack=new WxCallBack();
         //微信登录为getType为1，分享为0
         if (resp.getType() == WX_LOGIN) {
-
+            callBack.setCallType(1);
             switch (resp.errCode) {
                 case BaseResp.ErrCode.ERR_OK:
                     result = "发送成功";
@@ -97,29 +99,35 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
                     break;
             }
         } else {
+            callBack.setCallType(0);
             //分享成功回调
             System.out.println("------------分享回调------------");
             switch (resp.errCode) {
                 case BaseResp.ErrCode.ERR_OK:
                     //分享成功
+                    result = "分享成功";
                     Toast.makeText(WXEntryActivity.this, "分享成功", Toast.LENGTH_LONG).show();
                     break;
                 case BaseResp.ErrCode.ERR_USER_CANCEL:
                     //分享取消
+                    result = "分享取消";
                     Toast.makeText(WXEntryActivity.this, "分享取消", Toast.LENGTH_LONG).show();
                     break;
                 case BaseResp.ErrCode.ERR_AUTH_DENIED:
                     //分享拒绝
+                    result = "分享拒绝";
                     Toast.makeText(WXEntryActivity.this, "分享拒绝", Toast.LENGTH_LONG).show();
                     break;
                 default:
                     result = "分享返回";
                     Toast.makeText(this, result, Toast.LENGTH_LONG).show();
-                    finish();
                     break;
             }
-
         }
+        callBack.setCode(resp.errCode);
+        callBack.setMes(result);
+        ObserversManager.getInstance().sendMessage("WXFINISH_CALLBACK",callBack);
+        finish();
     }
 
 

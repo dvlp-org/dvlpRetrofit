@@ -15,14 +15,6 @@
         android:text="开始网络请求"
         android:textColor="#ffffff"
         android:background="@color/colorPrimaryDark"/>
-    <TextView
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="20dp"
-        android:text="1232321312"
-        android:textColor="@color/colorAccent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
     <Button
         android:layout_margin="10dp"
 
@@ -33,21 +25,12 @@
         android:gravity="center"
         android:textColor="#ffffff"
         android:text="微信登录"/>
-    <Button
-        android:layout_margin="10dp"
 
-        android:background="@color/colorPrimaryDark"
-        android:id="@+id/wxGetUser"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:gravity="center"
-        android:textColor="#ffffff"
-        android:text="微信分享"/>
 
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:fillViewport="true">
         <LinearLayout
             android:layout_width="match_parent"
@@ -71,6 +54,34 @@
                 android:lineSpacingExtra="9dp"
                 android:text=""/>
 
+            <Button
+                android:layout_margin="10dp"
+                android:background="@color/colorPrimaryDark"
+                android:id="@+id/wxGetUser"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:textColor="#ffffff"
+                android:text="微信分享-文字"/>
+            <Button
+                android:layout_margin="10dp"
+                android:background="@color/colorPrimaryDark"
+                android:id="@+id/wxSharedImg"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:textColor="#ffffff"
+                android:text="微信分享-图片"/>
+
+            <Button
+                android:layout_margin="10dp"
+                android:background="@color/colorPrimaryDark"
+                android:id="@+id/wxSharedInter"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:textColor="#ffffff"
+                android:text="微信分享-图文"/>
         </LinearLayout>
     </ScrollView>
 
