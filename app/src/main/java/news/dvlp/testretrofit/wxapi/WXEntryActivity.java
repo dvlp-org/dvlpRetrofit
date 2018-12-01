@@ -137,6 +137,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
      * @param get_access_token 请求的全地址
      */
     private void authPerssion(String get_access_token) {
+        RetrofitClient.getHttpClient();
         Call<WXLoginBean> favourables = RetrofitClient.getInstance()
                 .create(RetrofitService.class)
                 .getLogin(get_access_token);

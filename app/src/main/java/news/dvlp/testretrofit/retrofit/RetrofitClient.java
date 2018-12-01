@@ -42,7 +42,7 @@ public class RetrofitClient {
         return ClientHolder.retrofit;
     }
 
-    public static OkHttpClient getHttpClientO(){
+    public static OkHttpClient getHttpClient(){
         return ClientHolder.okHttpClient;
     }
 }

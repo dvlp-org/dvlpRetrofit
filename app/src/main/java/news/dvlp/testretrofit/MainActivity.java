@@ -1,5 +1,6 @@
 package news.dvlp.testretrofit;
 
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.Nullable;
@@ -19,11 +20,14 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.net.CookieManager;
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Map;
 
 import news.dvlp.testretrofit.observer.ObserverListenner;
 import news.dvlp.testretrofit.observer.ObserversManager;
+import news.dvlp.testretrofit.retrofit.Cookies.CookieManger;
 import news.dvlp.testretrofit.retrofit.RetrofitClient;
 import news.dvlp.testretrofit.retrofit.RetrofitService;
 import news.dvlp.testretrofit.wxlib.WXLoginBean;
@@ -83,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements ObserverListenner
         mSharedInter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferences userSettings= getSharedPreferences("Cookies_Prefs", 0);
+                Map<String, ?> prefsMap=userSettings.getAll();
                 WxShareAndLoginUtils.setWxSharedFinishListenner(new ObserverListenner() {
                     @Override
                     public void onReciveMessage(String name, Object object) {

@@ -8,6 +8,7 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.tencent.mm.opensdk.constants.Build;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.opensdk.modelmsg.WXImageObject;
@@ -393,8 +394,8 @@ public class WxShareAndLoginUtils {
         if (!iwxapi.isWXAppInstalled()) {
             Toast.makeText(context, "请先安装微信应用", Toast.LENGTH_SHORT).show();
             return false;
-        } else if (!iwxapi.isWXAppSupportAPI()) {
-            Toast.makeText(context, "请先更新微信应用", Toast.LENGTH_SHORT).show();
+        } else if (iwxapi.getWXAppSupportAPI()< Build.PAY_SUPPORTED_SDK_INT) {
+            Toast.makeText(context, "您未安装最新版本微信，不支持微信支付，请安装或升级微信版本", Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
