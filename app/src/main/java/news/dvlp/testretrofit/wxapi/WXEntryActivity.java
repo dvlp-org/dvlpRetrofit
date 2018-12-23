@@ -39,7 +39,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
     private String GetCodeRequest = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code";
     // 获取用户个人信息
     private String GetUserInfo = "https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID";
-    private String WX_APP_SECRET = "8e92089b066463369b8cc9f07a7638e8";
+    private String WX_APP_SECRET = "f284e074788df336ae9cd3195aa97ca6";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

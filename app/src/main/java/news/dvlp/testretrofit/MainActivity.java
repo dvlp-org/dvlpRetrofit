@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements ObserverListenner
             @Override
             public void onClick(View v) {
 //                WXLogin();
+//
                 WxShareAndLoginUtils.WXLogin(MainActivity.this, MainActivity.this);
             }
         });

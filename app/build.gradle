@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'com.dvlp.news'
+            keyPassword 'qwe123'
+            storeFile file('./keystore/dn_imtask.jks')
+            storePassword 'qwe123'
+        }
+    }
     compileSdkVersion 26
     defaultConfig {
         applicationId "news.dvlp.testretrofit"
@@ -16,6 +24,11 @@ android {
             minifyEnabled false
             matchingFallbacks = ['release']
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+
+        }
+        debug {
+            signingConfig signingConfigs.config
         }
     }
 }
@@ -23,7 +36,6 @@ configurations.all {
 //    transitive = false
 }
 dependencies {
-
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     //noinspection GradleCompatible
     implementation 'com.android.support:appcompat-v7:27.1.1'
@@ -32,8 +44,7 @@ dependencies {
     implementation files('libs/retrofit-2.4.0.jar')
     implementation files('libs/okhttp-3.10.0.jar')
     implementation files('libs/okio-1.14.1.jar')
-
-        compile('com.squareup.retrofit2:converter-gson:2.1.0') {
+    compile('com.squareup.retrofit2:converter-gson:2.1.0') {
         exclude group: 'com.squareup.retrofit2'
 
     }
@@ -41,12 +52,9 @@ dependencies {
         exclude group: 'com.squareup.retrofit2'
 
     }
-
     //微信登录
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
-
     implementation 'com.github.bumptech.glide:glide:4.7.1'
-
     androidTestImplementation 'com.android.support.test:runner:0.5'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:2.2.2'
 }
